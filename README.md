@@ -5,7 +5,8 @@ register.py是利用摄像头来注册 注册得到的保存在know里面
 
 Videoreco.py 是识别的脚本 读取know/文件夹下图片 打开摄像头人脸识别与 /know文件夹下对比匹配 
 
-
+识别结果
+![](https://github.com/labAxiaoming/face_register_and_reco/blob/master/result.jpg)
 
 
 
