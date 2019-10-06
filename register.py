@@ -1,10 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
+Created on Mon May 28 19:07:36 2018
+
+@author: ming
+"""
+
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
 Created on Sat May 26 15:54:13 2018
 
-@author: ssiwo
+@author: xm
 """
+
 import face_recognition
 import time
 import cv2
@@ -37,3 +46,18 @@ while True:
 #cv2.waitKey(0)
 cap.release()
 cv2.destroyAllWindows()  
+'''
+f=open('register/register.csv','a')
+files=os.listdir('know')
+for file in files:
+    img=cv2.imread('know/'+file)
+    if len(face_recognition.face_encodings(img))==1:
+            str0=face_recognition.face_encodings(img)[0].reshape(1,128)
+            f.write(file+',')
+            np.savetxt(f,str0,delimiter=',')
+f.close()
+
+'''
+
+
+
