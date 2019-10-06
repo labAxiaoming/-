@@ -3,11 +3,12 @@
 """
 Created on Sat May 26 15:40:44 2018
 
-@author: ssiwo
+@author: xm
 """
 
 import face_recognition
 import cv2
+import numpy as np
 import os
 # This is a demo of running face recognition on live video from your webcam. It's a little more complicated than the
 # other example, but it includes some basic performance tweaks to make things run a lot faster:
@@ -17,18 +18,26 @@ import os
 # PLEASE NOTE: This example requires OpenCV (the `cv2` library) to be installed only to read from your webcam.
 # OpenCV is *not* required to use the face_recognition library. It's only required if you want to run this
 # specific demo. If you have trouble installing it, try any of the other demos that don't require it instead.
+
 # Get a reference to webcam #0 (the default one)
 video_capture = cv2.VideoCapture(0)
 
 # Load a sample picture and learn how to recognize it.
-
 known_face_encodings=[]
 known_face_names=[]
-for filename in os.listdir(r"know/"): 
-    image = face_recognition.load_image_file("know/"+str(filename))
-    name=filename.split('_')[0]
-    known_face_names.append(name)
-    known_face_encodings.append(face_recognition.face_encodings(image)[0])
+f=open('register/register.csv','r')
+lines=f.readlines()
+for i in range(len(lines)):
+    listi=lines[i].split(',')
+    listecoding=[float(code) for code in listi[1:]]
+    listname=listi[0]
+    known_face_names.append(listname)
+    known_face_encodings.append(np.array(listecoding))
+f.close()
+
+
+
+ 
 
 # Load a second sample picture and learn how to recognize it.
 #biden_image = face_recognition.load_image_file("biden.jpg")
@@ -64,7 +73,7 @@ while True:
     if ret == 1:
     # Resize frame of video to 1/4 size for faster face recognition processing
         small_frame = cv2.resize(frame, (0, 0), fx=0.25, fy=0.25)
-#        small_frame=frame.copy()
+    
         # Convert the image from BGR color (which OpenCV uses) to RGB color (which face_recognition uses)
         rgb_small_frame = small_frame[:, :, ::-1]
     
@@ -72,22 +81,20 @@ while True:
         if process_this_frame:
             # Find all the faces and face encodings in the current frame of video
             face_locations = face_recognition.face_locations(rgb_small_frame)
-            for face_location in face_locations:
-                face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
-        
-                face_names = []
-                for face_encoding in face_encodings:
-                    # See if the face is a match for the known face(s)
-#                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding)
-                    matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.3)
-                    name = "Unknown"
-        
-                    # If a match was found in known_face_encodings, just use the first one.
-                    if True in matches:
-                        first_match_index = matches.index(True)
-                        name = known_face_names[first_match_index]
-        
-                    face_names.append(name)
+            face_encodings = face_recognition.face_encodings(rgb_small_frame, face_locations)
+    
+            face_names = []
+            for face_encoding in face_encodings:
+                # See if the face is a match for the known face(s)
+                matches = face_recognition.compare_faces(known_face_encodings, face_encoding,0.4)
+                name = "Unknown"
+    
+                # If a match was found in known_face_encodings, just use the first one.
+                if True in matches:
+                    first_match_index = matches.index(True)
+                    name = known_face_names[first_match_index]
+    
+                face_names.append(name)
     
         process_this_frame = not process_this_frame
     
@@ -110,17 +117,11 @@ while True:
     
         # Display the resulting image
         cv2.imshow('Video', frame)
-        
+    
         # Hit 'q' on the keyboard to quit!
-        if cv2.waitKey(1) & 0xFF == ord('q'):
-            break
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
 
 # Release handle to the webcam
 video_capture.release()
 cv2.destroyAllWindows()
-
-
-
-
-
-
